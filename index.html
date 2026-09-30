@@ -13,6 +13,8 @@
             --heading-color: #58a6ff;
             --code-bg: #010409;
             --accent-color: #238636;
+            --node-bg: #21262d;
+            --arrow-color: #8b949e;
         }
 
         body {
@@ -33,14 +35,74 @@
             padding: 30px;
         }
 
-        h1, h2, h3 {
+        h1, h2, h3, h4 {
             color: var(--heading-color);
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 8px;
         }
 
-        h1 {
-            margin-top: 0;
+        h1 { margin-top: 0; }
+
+        /* Flowchart Visual Diagram Styles */
+        .flowchart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin: 25px 0;
+            padding: 20px;
+            background: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .node {
+            background: var(--node-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 12px 20px;
+            text-align: center;
+            width: 80%;
+            max-width: 450px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .node strong {
+            color: #58a6ff;
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .node span {
+            font-size: 13px;
+            color: #8b949e;
+        }
+
+        .arrow {
+            color: var(--arrow-color);
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        @media (min-width: 768px) {
+            .flowchart {
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: stretch;
+                overflow-x: auto;
+            }
+            .node {
+                width: auto;
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+            }
+            .arrow {
+                display: flex;
+                align-items: center;
+                font-size: 24px;
+            }
         }
 
         pre {
@@ -66,22 +128,15 @@
             padding: 0;
         }
 
-        ul, ol {
-            padding-left: 20px;
-        }
+        ul, ol { padding-left: 20px; }
+        li { margin-bottom: 8px; }
 
-        li {
-            margin-bottom: 8px;
-        }
-
-        .badge {
-            display: inline-block;
-            background-color: var(--accent-color);
-            color: white;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
+        .app-box {
+            background: rgba(88, 166, 255, 0.05);
+            border-left: 4px solid var(--heading-color);
+            padding: 15px 20px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
         }
     </style>
 </head>
@@ -91,30 +146,43 @@
     <h1>📷 IP Webcam Motion Detector to WhatsApp Alert System</h1>
     <p>An automated motion-alert pipeline that captures motion events from a smartphone IP camera, routes them through a lightweight Python server running on Ubuntu, exposes the endpoint securely via <strong>ngrok</strong>, and sends real-time notifications to <strong>WhatsApp</strong> using <strong>Twilio</strong>.</p>
 
-    <h2>🏗 System Architecture</h2>
-    <pre>
-[ Smartphone IP Webcam ] 
-          │ (Motion Event)
-          ▼
-   [ Tasker / HTTP ]
-          │
-          ▼
-   [ ngrok Tunnel ] (Public HTTPS endpoint)
-          │
-          ▼
-[ Ubuntu Python HTTP Server ] (Built-in http.server - No Flask)
-          │
-          ▼
-   [ Twilio API ]
-          │
-          ▼
- [ WhatsApp Notification ]
-    </pre>
+    <!-- Visual Flowchart Diagram -->
+    <div class="flowchart">
+        <div class="node">
+            <strong>📱 IP Webcam App</strong>
+            <span>Detects Motion on Android Camera</span>
+        </div>
+        <div class="arrow">➔</div>
+        <div class="node">
+            <strong>🌐 ngrok Tunnel</strong>
+            <span>Secure Public HTTPS Endpoint</span>
+        </div>
+        <div class="arrow">➔</div>
+        <div class="node">
+            <strong>🐍 Ubuntu Python Server</strong>
+            <span>Processes Request (http.server)</span>
+        </div>
+        <div class="arrow">➔</div>
+        <div class="node">
+            <strong>💬 Twilio API</strong>
+            <span>Dispatches Message to WhatsApp</span>
+        </div>
+    </div>
+
+    <div class="app-box">
+        <h3>📲 About the Android IP Webcam Application</h3>
+        <p><strong>IP Webcam</strong> turns your smartphone into a network camera with multiple viewing options. It includes built-in video streaming, motion detection, and sensor logging accessible via HTTP.</p>
+        <ul>
+            <li><strong>Download:</strong> Available on the Google Play Store or APK mirror.</li>
+            <li><strong>Local Server URL:</strong> Typically operates on <code>http://&lt;PHONE_IP_ADDRESS&gt;:8080</code>.</li>
+            <li><strong>Key Endpoint:</strong> <code>/sensors.json</code> provides real-time motion sensor readings used for background polling.</li>
+        </ul>
+    </div>
 
     <h2>📋 Prerequisites</h2>
     <ul>
         <li><strong>Hardware / OS:</strong> Ubuntu Linux server.</li>
-        <li><strong>Smartphone:</strong> Android device with the <strong>IP Webcam</strong> app (and optional <strong>Tasker</strong> app).</li>
+        <li><strong>Smartphone:</strong> Android device running <strong>IP Webcam</strong> (and optional <strong>Tasker</strong>).</li>
         <li><strong>Accounts:</strong>
             <ul>
                 <li>Twilio Account with activated WhatsApp Sandbox.</li>
@@ -189,17 +257,16 @@ if __name__ == '__main__':
 
     <h3>4. Expose the Server via ngrok</h3>
     <pre><code>ngrok http 5000</code></pre>
-    <p>Webhook URL endpoint: <code>https://&lt;your-ngrok-id&gt;.ngrok-free.app</code></p>
 
-    <h3>5. Configure Smartphone Motion Detector</h3>
-    <h4>Method A: Using Tasker (Recommended)</h4>
+    <h3>5. Configure IP Webcam Motion Detection</h3>
+    <h4>Method A: Tasker Integration (Recommended)</h4>
     <ol>
         <li>Open <strong>Tasker</strong> on your Android device.</li>
         <li>Create a Profile: <code>Event</code> &rarr; <code>Plugin</code> &rarr; <code>IP Webcam</code> &rarr; <code>Motion detected</code>.</li>
         <li>Create Task: Action <code>Net</code> &rarr; <code>HTTP Request</code> (Method: <code>POST</code>, URL: <code>https://&lt;your-ngrok-id&gt;.ngrok-free.app</code>).</li>
     </ol>
 
-    <h4>Method B: Server-Side Motion Polling (No Extra Apps)</h4>
+    <h4>Method B: Python Sensor Polling Script</h4>
     <pre><code>import time
 import requests
 
