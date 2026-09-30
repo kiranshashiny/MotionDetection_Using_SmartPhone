@@ -32,7 +32,16 @@
   </header>
 
   <main>
-    <p>This is a basic HTML template. You can edit this page to add your own content!</p>
+    <p>A sample image of motion detection.
+      Project was done using SmartPhone IP webcam which sent it's data to an Ubuntu Server!</p>
+
+    Processing was done on Ubuntu server and an alert sent to WhatsApp using Twilio API.
+    Challenge was to send using the image instead of a SMS.
+
+    SMS was easy, however sending an image ( JPG or PNG)  required integration to an image server like IMGUR or other apps.
+    These apps would reject the image , or block as it was from Twilio.
+
+    Decision was made to host a local web server like ngrok which served as a 
 <img src="image.png" alt="Description of the image">
     
 
