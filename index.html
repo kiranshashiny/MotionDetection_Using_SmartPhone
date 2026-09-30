@@ -1,56 +1,232 @@
-
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>My Project</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, sans-serif;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 2rem;
-      line-height: 1.6;
-      color: #333;
-    }
-    header {
-      border-bottom: 2px solid #eee;
-      padding-bottom: 1rem;
-      margin-bottom: 2rem;
-    }
-    h1 {
-      color: #2b6cb0;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IP Webcam Motion Detector to WhatsApp Alert System</title>
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --text-color: #c9d1d9;
+            --heading-color: #58a6ff;
+            --code-bg: #010409;
+            --accent-color: #238636;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 30px;
+        }
+
+        h1, h2, h3 {
+            color: var(--heading-color);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        pre {
+            background-color: var(--code-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 16px;
+            overflow-x: auto;
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            font-size: 14px;
+        }
+
+        code {
+            font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+            background: rgba(110, 118, 129, 0.4);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 85%;
+        }
+
+        pre code {
+            background: transparent;
+            padding: 0;
+        }
+
+        ul, ol {
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+    </style>
 </head>
 <body>
 
-  <header>
-    <h1>Welcome to My Website</h1>
-  </header>
+<div class="container">
+    <h1>📷 IP Webcam Motion Detector to WhatsApp Alert System</h1>
+    <p>An automated motion-alert pipeline that captures motion events from a smartphone IP camera, routes them through a lightweight Python server running on Ubuntu, exposes the endpoint securely via <strong>ngrok</strong>, and sends real-time notifications to <strong>WhatsApp</strong> using <strong>Twilio</strong>.</p>
 
-  <main>
-    <p>A sample image of motion detection.
-      Project was done using SmartPhone IP webcam which sent it's data to an Ubuntu Server!</p>
+    <h2>🏗 System Architecture</h2>
+    <pre>
+[ Smartphone IP Webcam ] 
+          │ (Motion Event)
+          ▼
+   [ Tasker / HTTP ]
+          │
+          ▼
+   [ ngrok Tunnel ] (Public HTTPS endpoint)
+          │
+          ▼
+[ Ubuntu Python HTTP Server ] (Built-in http.server - No Flask)
+          │
+          ▼
+   [ Twilio API ]
+          │
+          ▼
+ [ WhatsApp Notification ]
+    </pre>
 
-    Processing was done on Ubuntu server and an alert sent to WhatsApp using Twilio API.
-    Challenge was to send using the image instead of a SMS.
+    <h2>📋 Prerequisites</h2>
+    <ul>
+        <li><strong>Hardware / OS:</strong> Ubuntu Linux server.</li>
+        <li><strong>Smartphone:</strong> Android device with the <strong>IP Webcam</strong> app (and optional <strong>Tasker</strong> app).</li>
+        <li><strong>Accounts:</strong>
+            <ul>
+                <li>Twilio Account with activated WhatsApp Sandbox.</li>
+                <li>ngrok Account for establishing secure webhooks.</li>
+            </ul>
+        </li>
+        <li><strong>Python:</strong> Python 3.8+ installed on Ubuntu.</li>
+    </ul>
 
-    SMS was easy, however sending an image ( JPG or PNG)  required integration to an image server like IMGUR or other apps.
-    These apps would reject the image , or block as it was from Twilio.
+    <h2>🚀 Quick Start Guide</h2>
 
-    Decision was made to host a local web server like ngrok which served as a 
-<img src="image.png" alt="Description of the image">
-    
+    <h3>1. Clone the Repository & Install Dependencies</h3>
+    <pre><code>git clone https://github.com/your-username/ip-webcam-whatsapp-alerts.git
+cd ip-webcam-whatsapp-alerts
+pip install twilio</code></pre>
 
-    
-  </main>
+    <h3>2. Configure Credentials</h3>
+    <p>Export your Twilio credentials as environment variables on your Ubuntu server:</p>
+    <pre><code>export TWILIO_ACCOUNT_SID="your_account_sid_here"
+export TWILIO_AUTH_TOKEN="your_auth_token_here"
+export TO_WHATSAPP_NUMBER="whatsapp:+1234567890"  # Your phone number with country code</code></pre>
 
-  <footer>
-    <p>&copy; 2026 My Project. All rights reserved.</p>
-  </footer>
+    <h3>3. Python Server Script (<code>server.py</code>)</h3>
+    <p>Uses Python's built-in <code>http.server</code> standard library (No Flask needed):</p>
+    <pre><code>import os
+import json
+from http.server import HTTPServer, BaseHTTPRequestHandler
+from twilio.rest import Client
+
+ACCOUNT_SID = os.getenv("TWILIO_ACCOUNT_SID")
+AUTH_TOKEN = os.getenv("TWILIO_AUTH_TOKEN")
+TO_NUMBER = os.getenv("TO_WHATSAPP_NUMBER")
+FROM_NUMBER = "whatsapp:+14155238886"
+
+twilio_client = Client(ACCOUNT_SID, AUTH_TOKEN)
+
+class MotionWebhookHandler(BaseHTTPRequestHandler):
+    def _send_response(self, status_code, message):
+        self.send_response(status_code)
+        self.send_header("Content-Type", "application/json")
+        self.end_headers()
+        self.wfile.write(json.dumps({"status": message}).encode("utf-8"))
+
+    def do_POST(self):
+        print("🚨 Motion detected by camera stream!")
+        try:
+            message = twilio_client.messages.create(
+                from_=FROM_NUMBER,
+                body="🚨 ALERT: Motion detected on your IP Webcam stream!",
+                to=TO_NUMBER
+            )
+            print(f"✅ WhatsApp alert dispatched! Message SID: {message.sid}")
+            self._send_response(200, "Alert sent successfully")
+        except Exception as e:
+            print(f"❌ Failed to dispatch message: {e}")
+            self._send_response(500, str(e))
+
+    def do_GET(self):
+        self.do_POST()
+
+def run_server(port=5000):
+    server_address = ('', port)
+    httpd = HTTPServer(server_address, MotionWebhookHandler)
+    print(f"🚀 Server listening on port {port} (No Flask)...")
+    httpd.serve_forever()
+
+if __name__ == '__main__':
+    run_server()</code></pre>
+
+    <p>Run the server:</p>
+    <pre><code>python3 server.py</code></pre>
+
+    <h3>4. Expose the Server via ngrok</h3>
+    <pre><code>ngrok http 5000</code></pre>
+    <p>Webhook URL endpoint: <code>https://&lt;your-ngrok-id&gt;.ngrok-free.app</code></p>
+
+    <h3>5. Configure Smartphone Motion Detector</h3>
+    <h4>Method A: Using Tasker (Recommended)</h4>
+    <ol>
+        <li>Open <strong>Tasker</strong> on your Android device.</li>
+        <li>Create a Profile: <code>Event</code> &rarr; <code>Plugin</code> &rarr; <code>IP Webcam</code> &rarr; <code>Motion detected</code>.</li>
+        <li>Create Task: Action <code>Net</code> &rarr; <code>HTTP Request</code> (Method: <code>POST</code>, URL: <code>https://&lt;your-ngrok-id&gt;.ngrok-free.app</code>).</li>
+    </ol>
+
+    <h4>Method B: Server-Side Motion Polling (No Extra Apps)</h4>
+    <pre><code>import time
+import requests
+
+IP_CAMERA_URL = "http://<PHONE_IP_ADDRESS>:8080/sensors.json"
+LOCAL_WEBHOOK = "http://localhost:5000"
+
+def poll_sensors():
+    while True:
+        try:
+            res = requests.get(IP_CAMERA_URL, timeout=3).json()
+            motion_value = res.get('motion', {}).get('data', [[0, [0]]])[-1][1][0]
+            
+            if motion_value > 0:
+                print("Motion detected via IP Webcam sensor polling!")
+                requests.post(LOCAL_WEBHOOK)
+                time.sleep(15)
+        except Exception:
+            pass
+        time.sleep(1)
+
+if __name__ == '__main__':
+    poll_sensors()</code></pre>
+
+    <h2>🛠 Testing the Setup</h2>
+    <p>Trigger a test alert manually from your terminal:</p>
+    <pre><code>curl -X POST https://&lt;your-ngrok-id&gt;.ngrok-free.app</code></pre>
+</div>
 
 </body>
 </html>
